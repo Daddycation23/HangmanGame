@@ -1,8 +1,7 @@
-#Credit to chrishorton for the word bank and hangman pics
 import random
 import time
 
-words = ('ant baboon badger bat bear beaver camel cat clam cobra cougar '
+WORDS = ('ant baboon badger bat bear beaver camel cat clam cobra cougar '
          'coyote crow deer dog donkey duck eagle ferret fox frog goat '
          'goose hawk lion lizard llama mole monkey moose mouse mule newt '
          'otter owl panda parrot pigeon python rabbit ram rat raven '
@@ -61,42 +60,46 @@ HANGMANPICS = ['''
       |
 =========''']
 
-
 def update_blanks(word, guessed_letters):
-    blanks = ["_" if letter not in guessed_letters else letter for letter in word]
-    return " ".join(blanks)
+    return ' '.join(letter if letter in guessed_letters else '_' for letter in word)
 
 def main():
-    theWord = random.choice(words)
+    word = random.choice(WORDS)
     guessed_letters = set()
-    hangmanCount = 0
+    hangman_count = 0
     max_attempts = len(HANGMANPICS) - 1
 
     print("Hello, welcome to the hangman game!")
     time.sleep(2)
 
-    while hangmanCount < max_attempts:
-        print(HANGMANPICS[hangmanCount])
-        print(update_blanks(theWord, guessed_letters))
-        userGuess = input("Please guess the golden letter: ").lower()
-
-        if userGuess in guessed_letters:
+    while hangman_count < max_attempts:
+        print(HANGMANPICS[hangman_count])
+        print(update_blanks(word, guessed_letters))
+        
+        guess = input("Please guess the golden letter: ").lower()
+        
+        if len(guess) != 1 or not guess.isalpha():
+            print("Please enter a single letter.")
+            continue
+        
+        if guess in guessed_letters:
             print("You already guessed that letter. Try again.")
-        elif userGuess in theWord:
+        elif guess in word:
             print("YESSER!")
-            guessed_letters.add(userGuess)
+            guessed_letters.add(guess)
         else:
             print("BooBoo, incorrect!")
-            hangmanCount += 1
-            guessed_letters.add(userGuess)
-            time.sleep(2)
+            hangman_count += 1
+            guessed_letters.add(guess)
+        
+        time.sleep(2)
+        
+        if set(word) <= guessed_letters:
+            print(f"YAY! You guessed the word: {word}")
+            return
 
-        if all(letter in guessed_letters for letter in theWord):
-            print(f"YAY! You guessed the word: {theWord}")
-            break
-    else:
-        print(HANGMANPICS[hangmanCount])
-        print(f"U so nooooooooob. The word was: {theWord}")
+    print(HANGMANPICS[hangman_count])
+    print(f"U so nooooooooob. The word was: {word}")
 
 if __name__ == "__main__":
     main()
